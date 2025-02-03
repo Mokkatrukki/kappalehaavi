@@ -1,0 +1,26 @@
+{
+  "name": "YLE Song Scrapper",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "sidePanel",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "YLE Song Scrapper"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://areena.yle.fi/*"],
+      "js": ["yle-songs-scrapper.js"]
+    }
+  ]
+}
