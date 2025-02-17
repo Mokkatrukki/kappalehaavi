@@ -1,3 +1,4 @@
+// Helper function to extract songs from text
 function extractSongs(text) {
   if (!text) return [];
   
@@ -38,6 +39,7 @@ function extractSongs(text) {
   return songs;
 }
 
+// Function to get card descriptions from the page
 function getCardDescriptions() {
   try {
     console.log('🔍 Searching for card descriptions...');
@@ -73,6 +75,7 @@ function getCardDescriptions() {
   }
 }
 
+// Listen for messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'scanYleSongs') {
     const descriptions = getCardDescriptions();

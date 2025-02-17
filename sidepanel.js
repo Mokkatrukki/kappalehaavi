@@ -35,6 +35,11 @@ async function initializeSpotifyAuth() {
     `;
     authContainer.appendChild(userInfo);
     
+    document.getElementById('logout-button')?.addEventListener('click', async () => {
+      await SpotifyService.logout();
+      window.location.reload();
+    });
+    
     const playlistSelect = document.createElement('select');
     playlistSelect.id = 'playlist-select';
     const playlists = await SpotifyService.getUserPlaylists();
@@ -46,7 +51,9 @@ async function initializeSpotifyAuth() {
   } else {
     const loginButton = document.createElement('button');
     loginButton.textContent = 'Login with Spotify';
-    loginButton.onclick = () => window.location.href = `${config.BACKEND_URL}/auth/login`;
+    loginButton.onclick = async () => {
+      await SpotifyService.initiateLogin();
+    };
     authContainer.appendChild(loginButton);
   }
   
@@ -127,6 +134,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 
     createSongList(request.descriptions);
+  }
+  
+  if (request.type === 'AUTH_STATUS_CHANGED') {
+    console.log('Auth status changed, reloading panel...');
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
+
+  if (request.type === 'LOGIN_SUCCESS') {
+    window.location.reload();
   }
 });
 

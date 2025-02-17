@@ -1,3 +1,6 @@
+const BACKEND_URL = 'http://localhost:3000';
+
+// Message handler for extension actions
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'scanYleSongs') {
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
@@ -10,7 +13,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           });
           return;
         }
-
         if (!tab.url || !tab.url.includes('areena.yle.fi')) {
           chrome.runtime.sendMessage({ 
             action: 'updateSongList', 
@@ -18,7 +20,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           });
           return;
         }
-
         chrome.tabs.sendMessage(tab.id, { action: 'scanYleSongs' }, (response) => {
           if (chrome.runtime.lastError) {
             chrome.runtime.sendMessage({ 
@@ -34,7 +35,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
       }
     });
-  } else if (request.action === 'updateSongList') {
+  } else if (request.action === 'updateSongList' || request.type === 'AUTH_STATUS_CHANGED') {
+    // Forward these messages to all extension components
     chrome.runtime.sendMessage(request);
   }
 });
