@@ -33,20 +33,37 @@ async function initializeSpotifyAuth() {
       <span>Logged in as ${authStatus.user.displayName}</span>
       <button id="logout-button">Logout</button>
     `;
+    // First add the userInfo to the DOM
     authContainer.appendChild(userInfo);
     
-    document.getElementById('logout-button')?.addEventListener('click', async () => {
-      const button = document.getElementById('logout-button');
-      button.disabled = true;
-      button.textContent = 'Logging out...';
-      const success = await SpotifyService.logout();
-      if (!success) {
-        button.disabled = false;
-        button.textContent = 'Logout';
-        alert('Logout failed. Please try again.');
-      }
-    });
+    // Now find the button AFTER it's in the DOM
+    const logoutButton = userInfo.querySelector('#logout-button');
+    console.log('Found logout button:', logoutButton); // Debug log
     
+    if (logoutButton) {
+      logoutButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+        console.log('Logout button clicked');
+        logoutButton.disabled = true;
+        logoutButton.textContent = 'Logging out...';
+        
+        try {
+          const success = await SpotifyService.logout();
+          console.log('Logout result:', success);
+          if (!success) {
+            logoutButton.disabled = false;
+            logoutButton.textContent = 'Logout';
+            alert('Logout failed. Please try again.');
+          }
+        } catch (error) {
+          console.error('Logout error:', error);
+          logoutButton.disabled = false;
+          logoutButton.textContent = 'Logout';
+          alert('Logout failed. Please try again.');
+        }
+      });
+    }
+
     const playlistSelect = document.createElement('select');
     playlistSelect.id = 'playlist-select';
     const playlists = await SpotifyService.getUserPlaylists();
@@ -65,6 +82,7 @@ async function initializeSpotifyAuth() {
   }
   
   document.getElementById('controls').prepend(authContainer);
+  console.log('Auth container added to controls:', document.getElementById('auth-container')); // Debug log
 }
 
 function createSongList(descriptions) {
