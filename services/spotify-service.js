@@ -13,8 +13,18 @@ export async function checkAuth() {
 
 export async function logout() {
   try {
-    await fetch(`${config.BACKEND_URL}/api/auth/logout`, { method: 'POST' });
-    return true;
+    const response = await fetch(`${config.BACKEND_URL}/api/auth/logout`, { method: 'POST' });
+    const data = await response.json();
+    
+    if (data.success) {
+      // Notify about logout
+      chrome.runtime.sendMessage({ 
+        type: 'AUTH_STATUS_CHANGED', 
+        data: { isAuthenticated: false, user: null } 
+      });
+      return true;
+    }
+    return false;
   } catch (error) {
     console.error('Logout failed:', error);
     return false;

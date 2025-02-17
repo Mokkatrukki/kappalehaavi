@@ -36,8 +36,15 @@ async function initializeSpotifyAuth() {
     authContainer.appendChild(userInfo);
     
     document.getElementById('logout-button')?.addEventListener('click', async () => {
-      await SpotifyService.logout();
-      window.location.reload();
+      const button = document.getElementById('logout-button');
+      button.disabled = true;
+      button.textContent = 'Logging out...';
+      const success = await SpotifyService.logout();
+      if (!success) {
+        button.disabled = false;
+        button.textContent = 'Logout';
+        alert('Logout failed. Please try again.');
+      }
     });
     
     const playlistSelect = document.createElement('select');
@@ -138,6 +145,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
   if (request.type === 'AUTH_STATUS_CHANGED') {
     console.log('Auth status changed, reloading panel...');
+    // Clear any existing content
+    const authContainer = document.getElementById('auth-container');
+    if (authContainer) {
+      authContainer.innerHTML = '';
+    }
+    // Reload after a short delay to ensure state is updated
     setTimeout(() => {
       window.location.reload();
     }, 500);
